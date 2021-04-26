@@ -1,4 +1,5 @@
-import {Batcher, prepareBatcher} from './batcher';
+import {Batcher} from './batcher';
+import { useSetBatcher } from "./set-batcher";
 
 type addWithTarget<T> = {target: Set<T>, item: T, mutate?: boolean};
 type addWithBatcher<T> = {item: T, batcher: Batcher<Set<T>>};
@@ -13,7 +14,7 @@ const batcherFromOptions = <T>(
     if ('batcher' in options) {
         return options.batcher;
     } else {
-        return prepareBatcher(options.target, options.mutate);
+        return useSetBatcher(options.target, options.mutate);
     }
 }
 

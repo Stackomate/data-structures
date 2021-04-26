@@ -1,7 +1,8 @@
 import {add, filter, remove} from '../src/set-operations';
-import { Batcher, cloneSet, prepareBatcher } from '../src/batcher';
+import { Batcher } from '../src/batcher';
+import { cloneSet, useSetBatcher } from "../src/set-batcher";
 
-describe('SetOperations', () => {
+xdescribe('SetOperations', () => {
     describe('add', () => {
         describe('1 operation', () => {
             describe('mutable', () => {
@@ -26,7 +27,7 @@ describe('SetOperations', () => {
 
                     it ('changes with batcher mutate', () => {
                         const s = new Set<number>([1,2]);
-                        let batcher = prepareBatcher(s, true);
+                        let batcher = useSetBatcher(s, true);
                         let helper = add({item: 3, batcher})
                         expect(helper).toEqual({
                             /* Because was Mutated */
@@ -64,7 +65,7 @@ describe('SetOperations', () => {
                     
                     it ('does not change with batcher mutate', () => {
                         const s = new Set<number>([1,2]);
-                        let batcher = prepareBatcher(s,  true);
+                        let batcher = useSetBatcher(s,  true);
                         let helper = add({target: s, item: 2, batcher})
                         expect(helper).toEqual({
                             /* Because did not change */
@@ -105,7 +106,7 @@ describe('SetOperations', () => {
 
                     it('creates new copy with batcher immutable', () => {
                         const s = new Set<number>([1,2]);
-                        const batcher = prepareBatcher(s);
+                        const batcher = useSetBatcher(s);
                         let helper = add({target: s, item: 3, batcher})
                         expect(helper).toEqual({
                             /* Because Immutable */
@@ -145,7 +146,7 @@ describe('SetOperations', () => {
 
                     it('does not change with batcher immutable', () => {
                         const s = new Set<number>([1,2]);
-                        let batcher = prepareBatcher(s);
+                        let batcher = useSetBatcher(s);
                         let helper = add({target: s, item: 2, batcher})
                         expect(helper).toEqual({
                             /* Because did not change */
@@ -202,7 +203,7 @@ describe('SetOperations', () => {
 
             it('mutable changed, not changed ', () => {
                 const s = new Set<number>([1,2]);
-                let batcher = prepareBatcher(s, true)
+                let batcher = useSetBatcher(s, true)
 
                 let helper = add({item: 3, batcher})
                 expect(helper).toEqual({
@@ -240,7 +241,7 @@ describe('SetOperations', () => {
             
             it('mutable not changed, changed', () => {
                 const s = new Set<number>([1, 2]);
-                const batcher = prepareBatcher(s, true);
+                const batcher = useSetBatcher(s, true);
                 let helper = add({item: 2, batcher})
                 expect(helper).toEqual({
                     /* Because not Mutated */
@@ -274,7 +275,7 @@ describe('SetOperations', () => {
 
             it('mutable not changed, not changed', () => {
                 const s = new Set<number>([1, 2]);
-                const batcher = prepareBatcher(s, true);
+                const batcher = useSetBatcher(s, true);
                 let helper = add({item: 2, batcher})
                 expect(helper).toEqual({
                     /* Because not Mutated */
@@ -308,7 +309,7 @@ describe('SetOperations', () => {
 
             it('immutable changed, changed', () => {
                 const s = new Set<number>([1, 2]);
-                let batcher = prepareBatcher(s);
+                let batcher = useSetBatcher(s);
                 let helper = add({batcher, item: 3})
                 expect(helper).toEqual({
                     initialValue: new Set([1, 2]),
@@ -339,7 +340,7 @@ describe('SetOperations', () => {
 
             it('immutable changed, not changed', () => {
                 const s = new Set<number>([1, 2]);
-                let batcher = prepareBatcher(s);
+                let batcher = useSetBatcher(s);
                 let helper = add({batcher, item: 3})
                 expect(helper).toEqual({
                     initialValue: new Set([1, 2]),
@@ -370,7 +371,7 @@ describe('SetOperations', () => {
             
             it('immutable not changed, changed', () => {
                 const s = new Set<number>([1, 2]);
-                let batcher = prepareBatcher(s);
+                let batcher = useSetBatcher(s);
                 let helper = add({batcher, item: 1})
                 expect(helper).toEqual({
                     initialValue: new Set([1, 2]),
@@ -400,7 +401,7 @@ describe('SetOperations', () => {
             
             it('immutable not changed, not changed', () => {
                 const s = new Set<number>([1, 2]);
-                let batcher = prepareBatcher(s);
+                let batcher = useSetBatcher(s);
                 let helper = add({batcher, item: 1})
                 expect(helper).toEqual({
                     initialValue: new Set([1, 2]),
@@ -433,7 +434,7 @@ describe('SetOperations', () => {
             describe('mutable', () => {
                 it('mutable changed, changed, changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -482,7 +483,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -531,7 +532,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, not changed, changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -580,7 +581,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, not changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -629,7 +630,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, changed, changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -678,7 +679,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -727,7 +728,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, not changed, changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -776,7 +777,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, not changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -828,7 +829,7 @@ describe('SetOperations', () => {
             describe('immutable', () => {
                 it('immutable changed, changed, changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -882,7 +883,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -935,7 +936,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, not changed, changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -988,7 +989,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, not changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1041,7 +1042,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, changed, changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1091,7 +1092,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1141,7 +1142,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, not changed, changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1191,7 +1192,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, not changed, not changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = add({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1268,7 +1269,7 @@ describe('SetOperations', () => {
 
                     it ('changes with batcher mutate', () => {
                         const s = new Set<number>([1, 2, 3]);
-                        let batcher = prepareBatcher(s, true);
+                        let batcher = useSetBatcher(s, true);
                         let helper = remove({item: 3, batcher})
                         expect(helper).toEqual({
                             /* Because was Mutated */
@@ -1306,7 +1307,7 @@ describe('SetOperations', () => {
                     
                     it ('does not change with batcher mutate', () => {
                         const s = new Set<number>([1, 2]);
-                        let batcher = prepareBatcher(s,  true);
+                        let batcher = useSetBatcher(s,  true);
                         let helper = remove({target: s, item: 3, batcher})
                         expect(helper).toEqual({
                             /* Because did not change */
@@ -1347,7 +1348,7 @@ describe('SetOperations', () => {
 
                     it('creates new copy with batcher immutable', () => {
                         const s = new Set<number>([1,2]);
-                        const batcher = prepareBatcher(s);
+                        const batcher = useSetBatcher(s);
                         let helper = remove({target: s, item: 2, batcher})
                         expect(helper).toEqual({
                             /* Because Immutable */
@@ -1387,7 +1388,7 @@ describe('SetOperations', () => {
 
                     it('does not change with batcher immutable', () => {
                         const s = new Set<number>([1, 2]);
-                        let batcher = prepareBatcher(s);
+                        let batcher = useSetBatcher(s);
                         let helper = remove({target: s, item: 3, batcher})
                         expect(helper).toEqual({
                             /* Because did not change */
@@ -1413,7 +1414,7 @@ describe('SetOperations', () => {
             describe('mutable', () => {
                 it('mutable changed, changed, changed', () => {
                     const s = new Set<number>([1, 2, 3]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1462,7 +1463,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1511,7 +1512,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, not changed, changed', () => {
                     const s = new Set<number>([1,2, 3]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1560,7 +1561,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, not changed, not changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 2})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1609,7 +1610,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, changed, changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1658,7 +1659,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 6})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1707,7 +1708,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, not changed, changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1756,7 +1757,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, not changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1808,7 +1809,7 @@ describe('SetOperations', () => {
             describe('immutable', () => {
                 it('immutable changed, changed, changed', () => {
                     const s = new Set<number>([1, 2, 3]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1862,7 +1863,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1915,7 +1916,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, not changed, changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 1})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -1968,7 +1969,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, not changed, not changed', () => {
                     const s = new Set<number>([1,2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 2})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2021,7 +2022,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, changed, changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2071,7 +2072,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2121,7 +2122,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, not changed, changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 3})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2171,7 +2172,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, not changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = remove({batcher, item: 4})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2249,7 +2250,7 @@ describe('SetOperations', () => {
 
                     it ('changes with batcher mutate', () => {
                         const s = new Set<number>([1, 2, 3, 4, 5]);
-                        let batcher = prepareBatcher(s, true);
+                        let batcher = useSetBatcher(s, true);
                         let helper = filter({batcher, fn: (i) => i < 4 })
                         expect(helper).toEqual({
                             /* Because was Mutated */
@@ -2288,7 +2289,7 @@ describe('SetOperations', () => {
 
                     it ('does not change with batcher mutate', () => {
                         const s = new Set<number>([1, 2, 3, 4, 5]);
-                        let batcher = prepareBatcher(s,  true);
+                        let batcher = useSetBatcher(s,  true);
                         let helper = filter({target: s, fn: i => i < 10, batcher})
                         expect(helper).toEqual({
                             /* Because did not change */
@@ -2312,7 +2313,7 @@ describe('SetOperations', () => {
             describe('mutable', () => {
                 it('mutable changed, changed, changed', () => {
                     const s = new Set<number>([1, 2, 3, 4]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: i => i < 4})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2361,7 +2362,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3, 4]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: i => i < 4})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2410,7 +2411,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, not changed, changed', () => {
                     const s = new Set<number>([1, 2, 3, 4]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: (i) => i < 4})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2459,7 +2460,7 @@ describe('SetOperations', () => {
     
                 it('mutable changed, not changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: i => i < 4})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2508,7 +2509,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, changed, changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: i => i < 6})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2557,7 +2558,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: i => i < 4})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2606,7 +2607,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, not changed, changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: i => i < 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2655,7 +2656,7 @@ describe('SetOperations', () => {
     
                 it('mutable not changed, not changed, not changed', () => {
                     const s = new Set<number>([1, 2]);
-                    let batcher = prepareBatcher(s, true);
+                    let batcher = useSetBatcher(s, true);
                     let helper = filter({batcher, fn: i => i < 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2707,7 +2708,7 @@ describe('SetOperations', () => {
             describe('immutable', () => {
                 it('immutable changed, changed, changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2761,7 +2762,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2814,7 +2815,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, not changed, changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2867,7 +2868,7 @@ describe('SetOperations', () => {
     
                 it('immutable changed, not changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 5})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2920,7 +2921,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, changed, changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 7})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -2970,7 +2971,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 6})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -3020,7 +3021,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, not changed, changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 7})
                     expect(helper).toEqual({
                         /* Because was Mutated */
@@ -3070,7 +3071,7 @@ describe('SetOperations', () => {
     
                 it('immutable not changed, not changed, not changed', () => {
                     const s = new Set<number>([1, 2, 3, 4, 5]);
-                    let batcher = prepareBatcher(s);
+                    let batcher = useSetBatcher(s);
                     let helper = filter({batcher, fn: i => i < 8})
                     expect(helper).toEqual({
                         /* Because was Mutated */

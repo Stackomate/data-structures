@@ -1,25 +1,22 @@
-export const cloneSet = <T>(initial: Set<T>) => new Set<T>(initial);
-
-export const createBatcher = <T>(target: Set<T>, mutate: boolean = false) => {
-    return new Batcher(target, mutate, cloneSet);
-}
-
-
-interface Prepare {
-    <T>(target: Set<T>, mutate?: boolean): Batcher<Set<T>>;
-    <T>(target: undefined, mutate: undefined, batcher: Batcher<Set<T>>): Batcher<Set<T>>;
-}
-
-export const prepareBatcher: Prepare = <T>(
-    target?: Set<T>, 
-    mutate?: boolean, 
-    batcher?: Batcher<Set<T>>) : Batcher<Set<T>> => {
-    /* TODO: Remove as Set<T> */
-    return batcher || createBatcher(target as Set<T>, mutate);
-}
+import { batch, Fn } from "./batch-fn";
 
 export class Batcher<T> {
     public currentValue!: T;
+
+    public batch <A>(f1: (a: Batcher<T>) => A) : A;
+    public batch <A, B>(f1: (a: Batcher<T>) => A, f2: Fn<A, B>): B;
+    public batch <A, B, C>(f1: (a: Batcher<T>) => A, f2: Fn<A, B>, f3: Fn<B, C>): C;
+    public batch <A, B, C, D>(f1: (a: Batcher<T>) => A, f2: Fn<A, B>, f3: Fn<B, C>, f4: Fn<C, D>): D;
+    public batch <A, B, C, D, E>(f1: (a: Batcher<T>) => A, f2: Fn<A, B>, f3: Fn<B, C>, f4: Fn<C, D>, f5: Fn<D, E>): E;
+    public batch <A, B, C, D, E, F>(f1: (a: Batcher<T>) => A, f2: Fn<A, B>, f3: Fn<B, C>, f4: Fn<C, D>, f5: Fn<D, E>, f6: Fn<E, F>): F;
+    public batch <Q>(...args: any) : Q    
+
+    public batch(...ops: any) {
+        return batch(this, ...ops);
+    }
+
+    /* TODO: Fix tests and add $ */
+    // public $ = this.batch;
 
     constructor(
         public initialValue: T,
@@ -27,23 +24,70 @@ export class Batcher<T> {
         public cloneFn: (a: T) => T
     ) { 
         this.currentValue = initialValue;
+        this.isUnlocked = mutateInitial;
     }
 
     hasChanged = false;
-    /* TODO: Add optional arg mutate that will overwrite default mutate */
+    isUnlocked = false;
+
+    /* TODO: Join with similar function, but preserve performance */
     willChange() {
         if (this.isUnlocked) {
-            this.currentValue = this.currentValue || this.initialValue;
             this.hasChanged = true;
             return false;            
         } else {
-            this.currentValue = this.cloneFn(this.initialValue);
+            this.currentValue = this.cloneFn(this.currentValue || this.initialValue);
+            this.isUnlocked = true;
             this.hasChanged = true;
             return true;
         }
     }
 
-    get isUnlocked() {
-        return this.hasChanged || this.mutateInitial === true;
+    willChangeWithoutCloning() {
+        if (this.isUnlocked) {        
+            this.hasChanged = true;
+            return false;            
+        } else {
+            this.currentValue = this.currentValue || this.initialValue;
+            this.isUnlocked = true;            
+            this.hasChanged = true;
+            return false;
+        }
     }
+
+    lock() {
+        this.isUnlocked = false;
+    }
+ 
+}
+
+//TODO: create a swap method;
+
+export const toValues = <T>(batcher: Batcher<T>[]): T[] => {
+    let arr: T[] = [];
+    for(let value of batcher){
+        arr.push(value.currentValue);
+    }
+    return arr;
+}
+
+export const fromValues = <T>(arr: T[], fn: (value: T) => Batcher<T>): Batcher<T>[] => {
+    let arrBatcher: Batcher<T>[] = [];
+    arr.forEach(element => {
+        arrBatcher.push(fn(element));
+    });
+    return arrBatcher;
+}
+
+export const forkAndLock = <T>(batcher: Batcher<T>): Batcher<T> => {
+    batcher.lock();
+    return new Batcher(batcher.currentValue, false, batcher.cloneFn);
+}
+
+export const value = <T>(batcher: Batcher<T>) : T => {
+    return batcher.currentValue;
+}
+
+export const cloneValue = <T>(batcher: Batcher<T>) : T => {
+    return batcher.cloneFn(value(batcher));
 }
